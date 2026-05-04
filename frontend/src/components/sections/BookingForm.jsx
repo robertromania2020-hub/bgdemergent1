@@ -33,7 +33,17 @@ export default function BookingForm() {
 
   const buildWhatsAppMsg = (f) => {
     const typeLabel = t.booking[f.transport_type] || f.transport_type;
-    return `Bună! Rezervare nouă BGD-Trans:\n\n• Nume: ${f.full_name}\n• Telefon: ${f.phone}\n• Plecare: ${f.departure}\n• Destinație: ${f.destination}\n• Tip: ${typeLabel}${f.message ? `\n• Detalii: ${f.message}` : ""}`;
+    const lines = [
+      "Bună! Rezervare nouă BGD-Trans",
+      "",
+      `• Nume: ${f.full_name}`,
+      `• Telefon: ${f.phone}`,
+      `• Plecare: ${f.departure}`,
+      `• Destinație: ${f.destination}`,
+      `• Tip transport: ${typeLabel}`,
+    ];
+    if (f.message) lines.push(`• Detalii: ${f.message}`);
+    return lines.join("\n");
   };
 
   const onSubmit = async (e) => {

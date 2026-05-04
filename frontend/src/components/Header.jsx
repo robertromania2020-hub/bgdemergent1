@@ -42,6 +42,7 @@ export default function Header() {
           <a href="#servicii" onClick={scrollTo("servicii")} data-testid="nav-services" className="hover:text-orange-500 transition-colors">{t.nav.services}</a>
           <a href="#rute" onClick={scrollTo("rute")} data-testid="nav-routes" className="hover:text-orange-500 transition-colors">{t.nav.routes}</a>
           <a href="#de-ce-noi" onClick={scrollTo("de-ce-noi")} data-testid="nav-why" className="hover:text-orange-500 transition-colors">{t.nav.whyUs}</a>
+          <a href="#testimoniale" onClick={scrollTo("testimoniale")} data-testid="nav-testimonials" className="hover:text-orange-500 transition-colors">{t.nav.testimonials}</a>
           <a href="#rezervare" onClick={scrollTo("rezervare")} data-testid="nav-booking" className="hover:text-orange-500 transition-colors">{t.nav.booking}</a>
         </nav>
 

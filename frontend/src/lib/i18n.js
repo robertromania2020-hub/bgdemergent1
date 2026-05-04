@@ -5,6 +5,7 @@ export const translations = {
       routes: "Rute",
       booking: "Rezervare",
       whyUs: "De ce noi",
+      testimonials: "Testimoniale",
       callNow: "Sună acum",
     },
     hero: {
@@ -94,7 +95,7 @@ export const translations = {
     },
   },
   en: {
-    nav: { services: "Services", routes: "Routes", booking: "Booking", whyUs: "Why us", callNow: "Call now" },
+    nav: { services: "Services", routes: "Routes", booking: "Booking", whyUs: "Why us", testimonials: "Reviews", callNow: "Call now" },
     hero: {
       badge: "Reliable international transport",
       title1: "Passenger & parcel transport",
@@ -169,7 +170,7 @@ export const translations = {
     },
   },
   de: {
-    nav: { services: "Leistungen", routes: "Routen", booking: "Buchung", whyUs: "Warum wir", callNow: "Jetzt anrufen" },
+    nav: { services: "Leistungen", routes: "Routen", booking: "Buchung", whyUs: "Warum wir", testimonials: "Bewertungen", callNow: "Jetzt anrufen" },
     hero: {
       badge: "Zuverlässiger internationaler Transport",
       title1: "Personen- & Pakettransport",

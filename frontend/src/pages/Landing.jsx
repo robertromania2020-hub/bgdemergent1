@@ -6,6 +6,7 @@ import RoutesSection from "../components/sections/Routes";
 import BookingForm from "../components/sections/BookingForm";
 import WhyUs from "../components/sections/WhyUs";
 import Footer from "../components/sections/Footer";
+import Testimonials from "../components/sections/Testimonials";
 import StickyMobileCTA from "../components/StickyMobileCTA";
 
 export default function Landing() {
@@ -17,6 +18,7 @@ export default function Landing() {
         <Services />
         <RoutesSection />
         <WhyUs />
+        <Testimonials />
         <BookingForm />
       </main>
       <Footer />

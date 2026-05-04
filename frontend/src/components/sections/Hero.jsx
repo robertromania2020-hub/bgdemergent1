@@ -3,8 +3,7 @@ import { useLang } from "../../context/LanguageContext";
 import { telHref, whatsappHref, BUSINESS_PHONE_DISPLAY } from "../../lib/contact";
 import { Phone, MessageCircle, ArrowRight, ShieldCheck, Clock, MapPinned } from "lucide-react";
 
-const HERO_IMG =
-  "https://images.unsplash.com/photo-1768400554801-2002b63e0591?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjAzMjd8MHwxfHNlYXJjaHwxfHx3aGl0ZSUyMHBhc3NlbmdlciUyMHZhbiUyMGhpZ2h3YXl8ZW58MHx8fHwxNzc3OTA5OTYwfDA&ixlib=rb-4.1.0&q=85";
+const HERO_IMG = "/hero-van.jpg";
 
 export default function Hero() {
   const { t } = useLang();
@@ -16,12 +15,12 @@ export default function Hero() {
       <div className="absolute inset-0">
         <img
           src={HERO_IMG}
-          alt="BGD-Trans van on European highway"
-          className="w-full h-full object-cover"
+          alt="BGD-Trans Renault Master van on European highway"
+          className="w-full h-full object-cover object-center"
           loading="eager"
         />
-        <div className="absolute inset-0 bg-gradient-to-r from-slate-950/90 via-slate-900/70 to-slate-900/30" />
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_right,rgba(249,115,22,0.18),transparent_55%)]" />
+        <div className="absolute inset-0 bg-gradient-to-r from-slate-950/85 via-slate-950/55 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-slate-950/60 via-transparent to-transparent" />
       </div>
 
       <div className="relative container mx-auto px-6 lg:px-12 max-w-7xl py-24">
@@ -74,20 +73,6 @@ export default function Hero() {
             <div className="flex items-center gap-2"><ShieldCheck className="w-5 h-5 text-orange-400" /> {t.hero.busText.split("•")[0]}</div>
             <div className="flex items-center gap-2"><Clock className="w-5 h-5 text-orange-400" /> {t.hero.busText.split("•")[1]}</div>
             <div className="flex items-center gap-2"><MapPinned className="w-5 h-5 text-orange-400" /> {t.hero.busText.split("•")[2]}</div>
-          </div>
-        </div>
-
-        {/* Floating "side-of-van" branding badge */}
-        <div className="hidden lg:block absolute right-12 bottom-16 pointer-events-none">
-          <div className="bg-white/95 backdrop-blur-md rounded-2xl border border-white/40 shadow-2xl px-6 py-4 rotate-[-2deg]">
-            <div className="text-[0.7rem] font-bold tracking-[0.2em] uppercase text-slate-400">Contact direct</div>
-            <div className="text-2xl font-black tracking-tight text-slate-900" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
-              BGD<span className="text-orange-500">-</span>Trans
-            </div>
-            <div className="flex items-center gap-2 text-slate-700 font-semibold">
-              <Phone className="w-4 h-4 text-orange-500" />
-              {BUSINESS_PHONE_DISPLAY}
-            </div>
           </div>
         </div>
       </div>
