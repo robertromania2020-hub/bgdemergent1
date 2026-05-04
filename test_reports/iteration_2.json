@@ -1,0 +1,43 @@
+{
+  "summary": "Iteration 2 frontend-only E2E validation (SEO route pages, admin filters/CSV, booking submission). All 11 checkpoints from the review request passed. No regressions observed. Backend smoke verified implicitly via live POST /api/bookings (201) and admin login flow working against REACT_APP_BACKEND_URL.",
+  "backend_issues": {"critical": [], "minor": []},
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "tested_checkpoints": {
+    "seo_routes": {
+      "romania-germania": {"title_ok": true, "meta_description_ok": true, "h1": true, "breadcrumb": true, "plecari_destinatii": true, "call_btn_tel": true, "whatsapp_btn_wa_me": true, "inter_route_links": 2, "jsonld_valid": true, "jsonld_type": "Service"},
+      "romania-austria":  {"title_ok": true, "meta_description_ok": true, "h1": true, "breadcrumb": true, "plecari_destinatii": true, "call_btn_tel": true, "whatsapp_btn_wa_me": true, "inter_route_links": 2, "jsonld_valid": true, "jsonld_type": "Service"},
+      "romania-olanda":   {"title_ok": true, "meta_description_ok": true, "h1": true, "breadcrumb": true, "plecari_destinatii": true, "call_btn_tel": true, "whatsapp_btn_wa_me": true, "inter_route_links": 2, "jsonld_valid": true, "jsonld_type": "Service"}
+    },
+    "invalid_slug_redirects_to_root": true,
+    "landing_route_link_cards": {"romania-germania": true, "romania-austria": true, "romania-olanda": true, "click_navigates_ok": true},
+    "admin_search": "Filters 8 rows -> 1 row when searching 'TEST_Admin_Search'",
+    "admin_status_filter": "confirmed -> 0 rows (expected since new bookings have status=new)",
+    "admin_type_filter": "persoane -> 4 rows (subset of 8)",
+    "admin_stat_cards_remain_total": "stat-new still shows 8 after filtering applied",
+    "admin_csv_export": "download triggered with filename bgd-trans-rezervari-2026-05-04.csv; toast '8 rezervări exportate' shown; no JS errors",
+    "booking_form_submission": "POST /api/bookings -> 201; window.open called with https://wa.me/40769129126?text=... encoded message containing full booking details; form cleared; success toast visible"
+  },
+  "test_report_links": [
+    "/app/backend/tests/backend_test.py"
+  ],
+  "action_items": [
+    "No fixes required for iteration 2 scope. All features working as specified."
+  ],
+  "critical_code_review_comments": [
+    "BookingForm onSubmit: on mobile path both whatsapp:// and wa.me are opened (800ms fallback). If the native app DOES launch, the wa.me tab still opens in background on return. Consider detecting visibilitychange/blur to cancel the setTimeout fallback.",
+    "RoutePage useEffect removes #route-jsonld in cleanup — good; however, if user navigates directly landing -> /rute/:slug very quickly, the landing's MovingCompany JSON-LD in index.html remains (intended). No duplicate @type conflicts observed.",
+    "AdminDashboard exportCsv uses new Date(b.created_at).toLocaleString('ro-RO') — fine, but could export ISO timestamp for analytics reliability. Low priority.",
+    "Carry-over from iteration 1: server.py still uses deprecated @app.on_event and CORS '*' + allow_credentials=True (per iteration_1 review). No changes made in iteration 2 so these persist."
+  ],
+  "updated_files": [],
+  "success_rate": {"backend": "not retested (out of scope)", "frontend": "100% (all 11 review checkpoints)"},
+  "test_credentials": "admin@bgd-trans.com / BgdTrans2025 (verified working)",
+  "seed_data_creation": "1 TEST_Admin_Search booking + 1 TEST_Booking_E2E booking created via live POST /api/bookings. Total ~8 bookings now visible in admin dashboard. Safe to clear if desired.",
+  "retest_needed": false,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "Route page data-testids: route-call-btn, route-whatsapp-btn. Landing route-link cards: route-link-romania-germania/austria/olanda. Admin: admin-search, admin-status-filter, admin-type-filter, admin-export-csv, admin-refresh-btn, stat-new/contacted/confirmed/cancelled. Booking form submission uses window.open for desktop (headless Chromium UA). window.open spy pattern: override window.open in page.evaluate before clicking submit, then read window.__opened array."
+}

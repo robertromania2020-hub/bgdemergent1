@@ -4,6 +4,7 @@ import { Toaster } from "./components/ui/sonner";
 import { LanguageProvider } from "./context/LanguageContext";
 import { AuthProvider, useAuth } from "./context/AuthContext";
 import Landing from "./pages/Landing";
+import RoutePage from "./pages/RoutePage";
 import AdminLogin from "./pages/AdminLogin";
 import AdminDashboard from "./pages/AdminDashboard";
 import "./App.css";
@@ -28,6 +29,7 @@ export default function App() {
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<Landing />} />
+            <Route path="/rute/:slug" element={<RoutePage />} />
             <Route path="/admin/login" element={<AdminLogin />} />
             <Route
               path="/admin/dashboard"

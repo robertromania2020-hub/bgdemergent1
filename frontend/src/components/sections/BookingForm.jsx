@@ -46,6 +46,23 @@ export default function BookingForm() {
     return lines.join("\n");
   };
 
+  const openWhatsApp = (msg) => {
+    const text = encodeURIComponent(msg);
+    // Detect mobile to use the whatsapp:// scheme which opens the native app directly
+    const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+    const number = "40769129126";
+    if (isMobile) {
+      // whatsapp:// opens the installed app instantly (no browser tab)
+      window.location.href = `whatsapp://send?phone=${number}&text=${text}`;
+      // Fallback to wa.me after 800ms in case the app isn't installed
+      setTimeout(() => {
+        window.open(`https://wa.me/${number}?text=${text}`, "_blank", "noopener,noreferrer");
+      }, 800);
+    } else {
+      window.open(`https://wa.me/${number}?text=${text}`, "_blank", "noopener,noreferrer");
+    }
+  };
+
   const onSubmit = async (e) => {
     e.preventDefault();
     if (!form.full_name || !form.phone || !form.departure || !form.destination || !form.transport_type) {
@@ -56,9 +73,8 @@ export default function BookingForm() {
     try {
       await axios.post(`${API}/bookings`, form);
       toast.success(t.booking.success);
-      // Open WhatsApp in new tab as instant notification path
-      const url = whatsappHref(buildWhatsAppMsg(form));
-      window.open(url, "_blank", "noopener,noreferrer");
+      // Open WhatsApp directly with all booking details to BGD-Trans business number
+      openWhatsApp(buildWhatsAppMsg(form));
       setForm(initialForm);
     } catch (err) {
       console.error(err);

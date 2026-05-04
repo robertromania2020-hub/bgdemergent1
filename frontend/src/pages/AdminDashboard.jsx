@@ -1,17 +1,18 @@
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState, useCallback, useMemo } from "react";
 import axios from "axios";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { useLang } from "../context/LanguageContext";
 import { Button } from "../components/ui/button";
 import { Badge } from "../components/ui/badge";
+import { Input } from "../components/ui/input";
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from "../components/ui/table";
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "../components/ui/select";
-import { LogOut, Truck, Phone, MessageCircle, RefreshCw, Trash2, Inbox } from "lucide-react";
+import { LogOut, Truck, Phone, MessageCircle, RefreshCw, Trash2, Inbox, Search, Download } from "lucide-react";
 import { toast } from "sonner";
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
@@ -29,6 +30,9 @@ export default function AdminDashboard() {
   const navigate = useNavigate();
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [statusFilter, setStatusFilter] = useState("all");
+  const [typeFilter, setTypeFilter] = useState("all");
+  const [search, setSearch] = useState("");
 
   useEffect(() => {
     if (!authLoading && !user) navigate("/admin/login", { replace: true });
@@ -85,6 +89,54 @@ export default function AdminDashboard() {
     return acc;
   }, {});
 
+  const filtered = useMemo(() => {
+    const q = search.trim().toLowerCase();
+    return bookings.filter((b) => {
+      if (statusFilter !== "all" && b.status !== statusFilter) return false;
+      if (typeFilter !== "all" && b.transport_type !== typeFilter) return false;
+      if (!q) return true;
+      return (
+        b.full_name.toLowerCase().includes(q) ||
+        b.phone.toLowerCase().includes(q) ||
+        b.departure.toLowerCase().includes(q) ||
+        b.destination.toLowerCase().includes(q)
+      );
+    });
+  }, [bookings, statusFilter, typeFilter, search]);
+
+  const exportCsv = () => {
+    if (filtered.length === 0) {
+      toast.error("Nicio rezervare de exportat");
+      return;
+    }
+    const headers = ["Data", "Nume", "Telefon", "Plecare", "Destinație", "Tip", "Status", "Mesaj"];
+    const escape = (v) => {
+      const s = (v ?? "").toString().replace(/"/g, '""');
+      return /[",\n;]/.test(s) ? `"${s}"` : s;
+    };
+    const rows = filtered.map((b) => [
+      new Date(b.created_at).toLocaleString("ro-RO"),
+      b.full_name,
+      b.phone,
+      b.departure,
+      b.destination,
+      b.transport_type,
+      b.status,
+      b.message || "",
+    ].map(escape).join(","));
+    const csv = "\uFEFF" + [headers.join(","), ...rows].join("\n");
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `bgd-trans-rezervari-${new Date().toISOString().slice(0, 10)}.csv`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    toast.success(`${filtered.length} rezervări exportate`);
+  };
+
   return (
     <div className="min-h-screen bg-slate-50" style={{ fontFamily: "'Manrope', sans-serif" }}>
       <header className="bg-white border-b border-slate-200 sticky top-0 z-20">
@@ -116,14 +168,19 @@ export default function AdminDashboard() {
             <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-slate-900" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
               {t.admin.dashboard}
             </h1>
-            <p className="mt-2 text-slate-500">{bookings.length} total</p>
+            <p className="mt-2 text-slate-500">{filtered.length} / {bookings.length} total</p>
           </div>
-          <Button onClick={fetchBookings} data-testid="admin-refresh-btn" variant="outline" className="rounded-xl">
-            <RefreshCw className="w-4 h-4 mr-2" /> Reîncarcă
-          </Button>
+          <div className="flex flex-wrap gap-2">
+            <Button onClick={fetchBookings} data-testid="admin-refresh-btn" variant="outline" className="rounded-xl">
+              <RefreshCw className="w-4 h-4 mr-2" /> Reîncarcă
+            </Button>
+            <Button onClick={exportCsv} data-testid="admin-export-csv" className="rounded-xl bg-slate-900 hover:bg-slate-800">
+              <Download className="w-4 h-4 mr-2" /> Export CSV
+            </Button>
+          </div>
         </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
           {["new", "contacted", "confirmed", "cancelled"].map((s) => (
             <div key={s} data-testid={`stat-${s}`} className="bg-white rounded-2xl border border-slate-200 p-5">
               <div className="text-xs font-bold tracking-[0.15em] uppercase text-slate-500">{t.admin.status[s]}</div>
@@ -132,13 +189,49 @@ export default function AdminDashboard() {
           ))}
         </div>
 
+        <div className="bg-white rounded-2xl border border-slate-200 p-4 mb-6 flex flex-col sm:flex-row gap-3">
+          <div className="relative flex-1">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+            <Input
+              data-testid="admin-search"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Caută după nume, telefon, oraș..."
+              className="pl-9 h-11 rounded-xl"
+            />
+          </div>
+          <Select value={statusFilter} onValueChange={setStatusFilter}>
+            <SelectTrigger data-testid="admin-status-filter" className="h-11 w-full sm:w-44 rounded-xl">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Toate statusurile</SelectItem>
+              <SelectItem value="new">{t.admin.status.new}</SelectItem>
+              <SelectItem value="contacted">{t.admin.status.contacted}</SelectItem>
+              <SelectItem value="confirmed">{t.admin.status.confirmed}</SelectItem>
+              <SelectItem value="cancelled">{t.admin.status.cancelled}</SelectItem>
+            </SelectContent>
+          </Select>
+          <Select value={typeFilter} onValueChange={setTypeFilter}>
+            <SelectTrigger data-testid="admin-type-filter" className="h-11 w-full sm:w-44 rounded-xl">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Toate tipurile</SelectItem>
+              <SelectItem value="persoane">Persoane</SelectItem>
+              <SelectItem value="colete">Colete</SelectItem>
+              <SelectItem value="auto">Auto</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+
         <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden">
           {loading ? (
             <div className="p-10 text-center text-slate-500">Se încarcă...</div>
-          ) : bookings.length === 0 ? (
+          ) : filtered.length === 0 ? (
             <div className="p-16 text-center">
               <Inbox className="w-10 h-10 text-slate-300 mx-auto" />
-              <p className="mt-3 text-slate-500">{t.admin.empty}</p>
+              <p className="mt-3 text-slate-500">{bookings.length === 0 ? t.admin.empty : "Nicio rezervare nu se potrivește filtrului."}</p>
             </div>
           ) : (
             <div className="overflow-x-auto">
@@ -155,7 +248,7 @@ export default function AdminDashboard() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {bookings.map((b) => (
+                  {filtered.map((b) => (
                     <TableRow key={b.id} data-testid={`booking-row-${b.id}`}>
                       <TableCell className="text-xs text-slate-500 whitespace-nowrap">
                         {new Date(b.created_at).toLocaleString("ro-RO", { dateStyle: "short", timeStyle: "short" })}

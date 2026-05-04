@@ -1,7 +1,9 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import { useLang } from "../../context/LanguageContext";
 import { CITIES } from "../../lib/cities";
-import { MapPin, ArrowRight, RotateCcw } from "lucide-react";
+import { ROUTE_LIST } from "../../lib/route-pages";
+import { MapPin, ArrowRight, RotateCcw, Sparkles } from "lucide-react";
 
 const COUNTRY_META = {
   Romania: { flag: "🇷🇴", label: "România", color: "from-blue-500 to-red-500" },
@@ -79,6 +81,23 @@ export default function RoutesSection() {
               {t.routes.returnText}
             </div>
           </div>
+        </div>
+
+        <div className="mt-10 flex flex-wrap items-center gap-3">
+          <span className="text-xs font-bold tracking-[0.18em] uppercase text-slate-500 mr-2 flex items-center gap-2">
+            <Sparkles className="w-4 h-4 text-orange-500" /> Pagini dedicate per rută:
+          </span>
+          {ROUTE_LIST.map((r) => (
+            <Link
+              key={r.slug}
+              to={`/rute/${r.slug}`}
+              data-testid={`route-link-${r.slug}`}
+              className="group inline-flex items-center gap-2 px-4 py-2 rounded-full border border-slate-200 hover:border-orange-300 hover:bg-orange-50 text-slate-700 font-semibold text-sm transition-all"
+            >
+              {r.from} → {r.to}
+              <ArrowRight className="w-4 h-4 text-orange-500 group-hover:translate-x-0.5 transition-transform" />
+            </Link>
+          ))}
         </div>
       </div>
     </section>
