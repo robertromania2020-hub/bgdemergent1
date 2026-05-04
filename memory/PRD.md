@@ -33,7 +33,12 @@ Construire site marketing pentru "BGD-Trans" — companie de transport internaț
 - ✅ i18n RO/EN/DE pe tot site-ul (inclusiv testimoniale).
 - ✅ Sticky CTA mobil (Sună / WhatsApp).
 - ✅ Imagine hero AI generată (Renault Master alb cu inscripție BGD-Trans + nr. telefon).
-- ✅ Testat: 100% backend (15/15 pytest), ~95% frontend smoke (Playwright).
+- ✅ Secțiune Testimoniale (4 review-uri în RO/EN/DE).
+- ✅ Trei pagini SEO dedicate: `/rute/romania-germania`, `/rute/romania-austria`, `/rute/romania-olanda` cu JSON-LD `Service` + meta unic.
+- ✅ Schema.org `MovingCompany` (LocalBusiness) JSON-LD în `index.html` + meta tags OG/Twitter.
+- ✅ WhatsApp se deschide direct ca aplicație pe mobil (`whatsapp://send?...`) cu fallback `wa.me` la 800ms.
+- ✅ Admin: search (nume/telefon/oraș), filtru status, filtru tip, export CSV.
+- ✅ Testat: 100% backend (15/15 pytest), 100% frontend (11/11 checkpoints).
 
 ## Test Credentials
 Vezi `/app/memory/test_credentials.md`.
