@@ -2,18 +2,93 @@ import React from "react";
 import { useLang } from "../../context/LanguageContext";
 import { Users, Package, CarFront, ArrowUpRight } from "lucide-react";
 
-const IMAGES = {
-  passengers: "https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&w=1200&q=80",
-  parcels: "https://images.pexels.com/photos/6869048/pexels-photo-6869048.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
-  auto: "https://images.unsplash.com/photo-1601584115197-04ecc0da31d7?auto=format&fit=crop&w=1200&q=80",
-};
+// All three cards feature the SAME luxury Renault Master 8+1 (per user request).
+// We differentiate via overlay badges + decorative SVG accessories (trailer / car platform).
+const HERO_IMG = "/hero-van.jpg";
+
+function TrailerOverlay() {
+  // Decorative SVG of a small enclosed cargo trailer hooked to the van
+  return (
+    <svg
+      className="absolute bottom-3 right-3 w-32 h-16 drop-shadow-2xl pointer-events-none"
+      viewBox="0 0 220 110"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-hidden="true"
+    >
+      <rect x="20" y="20" width="160" height="55" rx="6" fill="#fff" stroke="#0f172a" strokeWidth="3" />
+      <rect x="160" y="35" width="14" height="25" rx="2" fill="#0f172a" />
+      <rect x="35" y="30" width="115" height="35" rx="2" fill="#f8fafc" />
+      <text x="92" y="52" textAnchor="middle" fontFamily="Space Grotesk, sans-serif" fontSize="14" fontWeight="700" fill="#f97316">BGD</text>
+      <circle cx="55" cy="82" r="11" fill="#0f172a" />
+      <circle cx="55" cy="82" r="5" fill="#f97316" />
+      <circle cx="145" cy="82" r="11" fill="#0f172a" />
+      <circle cx="145" cy="82" r="5" fill="#f97316" />
+      <line x1="0" y1="55" x2="20" y2="48" stroke="#0f172a" strokeWidth="3" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+function CarPlatformOverlay() {
+  // Decorative SVG of a flatbed car carrier with a sedan strapped on top
+  return (
+    <svg
+      className="absolute bottom-3 right-3 w-40 h-20 drop-shadow-2xl pointer-events-none"
+      viewBox="0 0 280 130"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-hidden="true"
+    >
+      {/* sedan car on top */}
+      <path d="M70 50 L100 30 L180 30 L210 50 L240 55 L240 75 L60 75 L60 55 Z" fill="#1e293b" />
+      <path d="M105 35 L175 35 L195 50 L90 50 Z" fill="#94a3b8" opacity="0.7" />
+      <circle cx="95" cy="80" r="8" fill="#0f172a" />
+      <circle cx="215" cy="80" r="8" fill="#0f172a" />
+      {/* flatbed platform */}
+      <rect x="30" y="80" width="240" height="14" rx="3" fill="#f97316" />
+      <rect x="30" y="80" width="240" height="6" rx="2" fill="#fb923c" />
+      {/* trailer wheels */}
+      <circle cx="70" cy="105" r="13" fill="#0f172a" />
+      <circle cx="70" cy="105" r="6" fill="#f97316" />
+      <circle cx="225" cy="105" r="13" fill="#0f172a" />
+      <circle cx="225" cy="105" r="6" fill="#f97316" />
+      {/* hitch */}
+      <line x1="0" y1="92" x2="30" y2="86" stroke="#0f172a" strokeWidth="3" strokeLinecap="round" />
+    </svg>
+  );
+}
 
 export default function Services() {
-  const { t } = useLang();
+  const { t, lang } = useLang();
+
   const cards = [
-    { key: "passengers", icon: Users, img: IMAGES.passengers, ...t.services.passengers },
-    { key: "parcels", icon: Package, img: IMAGES.parcels, ...t.services.parcels },
-    { key: "auto", icon: CarFront, img: IMAGES.auto, ...t.services.auto },
+    {
+      key: "passengers",
+      icon: Users,
+      img: HERO_IMG,
+      objectPos: "center",
+      badge: { ro: "8+1 LOCURI", en: "8+1 SEATS", de: "8+1 SITZE" },
+      overlay: null,
+      ...t.services.passengers,
+    },
+    {
+      key: "parcels",
+      icon: Package,
+      img: HERO_IMG,
+      objectPos: "30% center",
+      badge: { ro: "+ REMORCĂ COLETE", en: "+ CARGO TRAILER", de: "+ FRACHTANHÄNGER" },
+      overlay: <TrailerOverlay />,
+      ...t.services.parcels,
+    },
+    {
+      key: "auto",
+      icon: CarFront,
+      img: HERO_IMG,
+      objectPos: "20% center",
+      badge: { ro: "+ PLATFORMĂ AUTO", en: "+ CAR PLATFORM", de: "+ AUTO-PLATTFORM" },
+      overlay: <CarPlatformOverlay />,
+      ...t.services.auto,
+    },
   ];
 
   return (
@@ -38,15 +113,33 @@ export default function Services() {
                 data-testid={`service-card-${c.key}`}
                 className="group bg-white rounded-3xl border border-slate-200 overflow-hidden hover:shadow-2xl hover:shadow-slate-900/10 hover:-translate-y-1 transition-all duration-500"
               >
-                <div className="relative h-56 overflow-hidden">
-                  <img src={c.img} alt={c.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" loading="lazy" />
-                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950/60 via-transparent to-transparent" />
+                <div className="relative h-56 overflow-hidden bg-slate-200">
+                  <img
+                    src={c.img}
+                    alt={c.title}
+                    style={{ objectPosition: c.objectPos }}
+                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                    loading="lazy"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950/65 via-slate-950/15 to-transparent" />
+
+                  {/* Service icon badge top-left */}
                   <div className="absolute top-4 left-4 w-12 h-12 rounded-xl bg-orange-500 text-white flex items-center justify-center shadow-lg shadow-orange-500/40">
                     <Icon className="w-6 h-6" />
                   </div>
-                  <div className="absolute bottom-4 left-4 text-white/80 text-xs font-bold tracking-[0.2em] uppercase">
+
+                  {/* Service highlight badge top-right */}
+                  <div className="absolute top-4 right-4 px-3 py-1.5 rounded-full bg-white/95 backdrop-blur text-slate-900 text-[0.65rem] font-black tracking-[0.15em] uppercase shadow-lg">
+                    {c.badge[lang] || c.badge.ro}
+                  </div>
+
+                  {/* Number indicator */}
+                  <div className="absolute bottom-4 left-4 text-white/90 text-xs font-bold tracking-[0.2em] uppercase">
                     0{idx + 1}
                   </div>
+
+                  {/* Decorative overlay (trailer / car platform) */}
+                  {c.overlay}
                 </div>
                 <div className="p-7">
                   <h3 className="text-xl font-bold text-slate-900 tracking-tight flex items-center justify-between" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
