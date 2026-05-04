@@ -1,0 +1,36 @@
+{
+  "summary": "First end-to-end test pass for BGD-Trans MVP. Backend pytest suite (15 tests) covering /api/config, auth login (success/wrong/unknown/me/no-token/invalid-token), booking CRUD (create valid/invalid type/missing fields, list with auth, full lifecycle, status update, delete) all pass. Frontend smoke covered landing sections, language switcher RO/EN/DE, hero call/whatsapp hrefs, admin login with wrong+correct creds, /admin/dashboard protection redirect, dashboard bookings table render (4 rows after seed via API), and mobile sticky CTA presence with tel: and wa.me links.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [
+      {"flow": "Booking form dropdown selection", "issue": "Departure dropdown 'Bucuresti' option is inside a Romania group that is NOT scrolled into view by default (max-h-72 with grouped lists). Manual users can scroll within the popover, but consider auto-scroll-to-top or alphabetical ordering for better UX. Not a functional bug; backend creation works.", "affected_selectors": ["[data-testid=select-departure]"]}
+    ],
+    "design_issues": []
+  },
+  "test_report_links": [
+    "/app/backend/tests/backend_test.py",
+    "/app/test_reports/pytest/pytest_results.xml"
+  ],
+  "action_items": [
+    "Optional: verify Bucuresti UX in departure dropdown (scroll behavior). Otherwise no fixes needed."
+  ],
+  "critical_code_review_comments": [
+    "server.py uses deprecated FastAPI @app.on_event('startup'/'shutdown') hooks; migrate to lifespan context manager (FastAPI >=0.93).",
+    "server.py CORS_ORIGINS defaults to '*' AND allow_credentials=True together — browsers will reject this combination. Set explicit origins in production.",
+    "JWT_SECRET committed in /app/backend/.env is fine for dev but ensure it is rotated in production.",
+    "BookingForm departure/destination dropdowns lack alphabetical sort; large grouped list may require scrolling to find common cities like Bucuresti."
+  ],
+  "updated_files": [
+    "/app/backend/tests/backend_test.py"
+  ],
+  "success_rate": {"backend": "100% (15/15)", "frontend": "~95% (all critical flows verified)"},
+  "test_credentials": "admin@bgd-trans.com / BgdTrans2025 (verified working)",
+  "seed_data_creation": "Several TEST_ prefixed bookings created via API tests; full lifecycle test cleans its own data. ~3-4 leftover TEST_ bookings remain in DB visible in admin dashboard.",
+  "retest_needed": false,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "Backend pytest at /app/backend/tests/backend_test.py covers all endpoints and works against REACT_APP_BACKEND_URL. Admin auto-seeded on startup. Route-country data-testids use full country names: route-country-romania, route-country-germania, route-country-austria, route-country-olanda (not ISO codes). Mobile sticky CTA is at [data-testid=mobile-sticky-cta]. Booking form submission via UI requires scrolling within the dropdown popover to select cities like Bucuresti — backend creation itself works fine."
+}
